@@ -3,12 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import ProductPrice from './product-price';
+import { Product } from '@/types';
 
-type ProductCardProps = {
-  product: any;
-};
-
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard = ({ product }: { product: Product }) => {
   return (
     <Card className='w-full max-w-sm'>
       <CardHeader className='p-0 items-center'>
