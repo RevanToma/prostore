@@ -1,7 +1,7 @@
 'use client';
 
 import { Cart } from '@/types';
-import { Minus, Plus, Loader } from 'lucide-react';
+import { Minus, Plus, Loader, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -15,9 +15,14 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { useCartAction } from '@/hooks/use-cart-action';
+import { Card, CardContent } from '@/components/ui/card';
+import { formatCurrency } from '@/lib/utils';
+import { startTransition } from 'react';
+import { useRouter } from 'next/navigation';
 
 const CartTable = ({ cart }: { cart?: Cart }) => {
-  const { handleAddToCart, handleRemoveFromCart, isPending } = useCartAction();
+  const { handleAddToCart, handleRemoveFromCart, isPending } = useCartAction(),
+    router = useRouter();
 
   return (
     <>
@@ -87,6 +92,31 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
               </TableBody>
             </Table>
           </div>
+          <Card>
+            <CardContent className='p-4 gap-4'>
+              <div className='pb-3 text-xl'>
+                SubTotal ({cart.items.reduce((acc, item) => acc + item.qty, 0)}
+                ):
+                <span className='font-bold px-1'>
+                  {formatCurrency(cart.itemsPrice)}
+                </span>
+              </div>
+              <Button
+                className='w-full'
+                disabled={isPending}
+                onClick={() =>
+                  startTransition(() => router.push('/shipping-address'))
+                }
+              >
+                {isPending ? (
+                  <Loader className='w-4 h-4 animate-spin' />
+                ) : (
+                  <ArrowRight className='h-4 w-4' />
+                )}
+                Proceed to Checkout
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       )}
     </>
