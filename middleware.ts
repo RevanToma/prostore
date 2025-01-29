@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next();
     response.cookies.set('sessionCartId', sessionCartId, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'lax',
       path: '/',
     });
@@ -31,7 +31,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
-  console.log('✅ Session and cart session found, allowing access');
   return NextResponse.next();
 }
 
