@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { signInDefaultValues } from '@/lib/constants';
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { signInWithCredentials } from '@/lib/actions/user.actions';
 import Link from 'next/link';
@@ -27,6 +27,12 @@ const CredentialsSignInForm = () => {
       </Button>
     );
   };
+
+  useEffect(() => {
+    if (data.success) {
+      window.location.href = '/';
+    }
+  }, [data.success]);
 
   return (
     <form action={action}>
