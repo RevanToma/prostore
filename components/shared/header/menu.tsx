@@ -18,7 +18,7 @@ const Menu = () => {
         <div className='space-x-2'>
           <ModeToggle />
           <Button asChild variant={'ghost'}>
-            <Link href={'/'}>
+            <Link href={'/cart'}>
               <ShoppingCart /> Cart
             </Link>
           </Button>
