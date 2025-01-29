@@ -4,6 +4,7 @@ import { signIn, signOut } from '@/auth';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { hashSync } from 'bcrypt-ts-edge';
 import { prisma } from '@/db/prisma';
+import { formatError } from '../utils';
 
 export const signInWithCredentials = async (
   prevState: unknown,
@@ -64,6 +65,6 @@ export const signUpUser = async (prevState: unknown, formData: FormData) => {
     if (isRedirectError(error)) {
       throw error;
     }
-    return { success: false, message: 'Invalid Credentials' };
+    return { success: false, message: formatError(error) };
   }
 };
