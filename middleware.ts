@@ -2,39 +2,42 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+  console.log('🔍 Production Middleware Check');
+
   let sessionCartId = request.cookies.get('sessionCartId')?.value;
   const sessionToken = request.cookies.get('authjs.session-token');
 
-  // ✅ Ensure sessionCartId is always set
+  console.log('🔍 Cookies in Middleware:', request.cookies.getAll());
+
   if (!sessionCartId) {
-    console.log('🛒 No sessionCartId, generating a new one...');
+    console.log('🛒 No sessionCartId, generating one...');
     sessionCartId = crypto.randomUUID();
 
     const response = NextResponse.next();
     response.cookies.set('sessionCartId', sessionCartId, {
       httpOnly: true,
-      secure: true,
+      secure: true, // ✅ Enforce secure cookies
       sameSite: 'lax',
       path: '/',
     });
-    return response; // ✅ Allows the request to continue without redirection
+    return response;
   }
 
-  // ✅ If the user visits a protected page but is not authenticated, redirect
   const protectedRoutes = ['/shipping-address'];
   const isProtected = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   if (isProtected && !sessionToken) {
-    console.log('🚫 No session token found, redirecting to /sign-in');
+    console.log('🚫 No session token in production, redirecting to /sign-in');
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
+  console.log('✅ User is authenticated, proceeding');
   return NextResponse.next();
 }
 
 // ✅ Middleware applies to all routes to ensure cart session is always set
 export const config = {
-  matcher: ['/:path*'], // Runs for all requests
+  matcher: ['/:path*'],
 };
