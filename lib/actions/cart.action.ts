@@ -1,6 +1,6 @@
 'use server';
 
-import { Cart, CartItem } from '@/types';
+import { CartItem } from '@/types';
 import { convertToPlainObj, formatError, round2 } from '../utils';
 import { cookies } from 'next/headers';
 import { auth } from '@/auth';
