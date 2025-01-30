@@ -1,6 +1,6 @@
 'use server';
 
-import { CartItem } from '@/types';
+import { Cart, CartItem } from '@/types';
 import { convertToPlainObj, formatError, round2 } from '../utils';
 import { cookies } from 'next/headers';
 import { auth } from '@/auth';
@@ -11,9 +11,10 @@ import { Prisma } from '@prisma/client';
 
 const calcPrice = (items: CartItem[]) => {
   const itemsPrice = round2(
-      items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
-    ),
-    shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
+    items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
+  );
+
+  const shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
     taxPrice = round2(0.15 * itemsPrice),
     totalPrice = round2(itemsPrice + taxPrice + shippingPrice);
 
@@ -116,10 +117,7 @@ export const getMyCart = async () => {
   return convertToPlainObj({
     ...cart,
     items: cart.items as CartItem[],
-    itemsPrice: cart.itemsPrice.toString(),
-    totalPrice: cart.itemsPrice.toString(),
-    shippingPrice: cart.itemsPrice.toString(),
-    taxPrice: cart.itemsPrice.toString(),
+    ...calcPrice(cart.items as CartItem[]),
   });
 };
 
