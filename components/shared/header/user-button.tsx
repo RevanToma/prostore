@@ -40,7 +40,7 @@ const UserButton = async () => {
             </Button>
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className='w-56' align='end' forceMount>
+        <DropdownMenuContent className='w-56 py-2' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col space-y-1'>
               <div className='text-sm font-medium leading-none'>
@@ -51,6 +51,19 @@ const UserButton = async () => {
               </div>
             </div>
           </DropdownMenuLabel>
+
+          <DropdownMenuItem className='mt-2 mb-2'>
+            <Link href='/user/profile' className='w-full px-2'>
+              User Profile
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className='mt-2 mb-2'>
+            <Link href='/user/orders' className='w-full px-2'>
+              Order History
+            </Link>
+          </DropdownMenuItem>
+
           <DropdownMenuItem className='p-0 mb-1'>
             <form action={signOutUser} className='w-full'>
               <Button
