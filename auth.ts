@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { compareSync } from 'bcrypt-ts-edge';
 import type { NextAuthConfig } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export const config = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -64,20 +65,64 @@ export const config = {
     },
     async jwt({ token, user, trigger, session }: any) {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
 
         if (user.name === 'NO_NAME') {
           token.name = user.email!.split('@')[0];
+
           await prisma.user.update({
             where: { id: user.id },
             data: { name: token.name },
           });
         }
+
+        if (trigger === 'signIn' || trigger === 'signUp') {
+          const cookiesObject = await cookies(),
+            sessionCartId = cookiesObject.get('sessionCartId')?.value;
+
+          if (sessionCartId) {
+            const sessionCart = await prisma.cart.findFirst({
+              where: { sessionCartId },
+            });
+
+            if (sessionCart) {
+              await prisma.cart.deleteMany({
+                where: { userId: user.id },
+              });
+
+              await prisma.cart.update({
+                where: { id: sessionCart.id },
+                data: { userId: user.id },
+              });
+            }
+          }
+        }
       }
+
+      if (session?.user.name && trigger === 'update') {
+        token.name = session.user.name;
+      }
+
       return token;
     },
     authorized({ request, auth }: any) {
       if (!request.cookies.get('sessionCartId')) {
+        // array of regex patterns of paths we want to protect
+        const protectedPaths = [
+          /\/shipping-address/,
+          /\/payment-method/,
+          /\/place-order/,
+          /\/profile/,
+          /\/user\/(.*)/,
+          /\/order\/(.*)/,
+          /\/admin/,
+        ];
+        const { pathname } = request.nextUrl,
+          isProtected = protectedPaths.some((path) => path.test(pathname));
+
+        if (!auth && isProtected) return false;
+
         const sessionCartId = crypto.randomUUID();
 
         const newRequestHeaders = new Headers(request.headers);
