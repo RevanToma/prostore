@@ -62,6 +62,12 @@ export const formatCurrency = (value: number | string | null) => {
   }
 };
 
+const NUMBER_FORMATTER = new Intl.NumberFormat('en-US');
+
+export const formatNumber = (value: number) => {
+  return NUMBER_FORMATTER.format(value);
+};
+
 export const formatId = (id: string) => `..${id.substring(id.length - 6)}`;
 
 export const formatDateTime = (dateString: Date) => {

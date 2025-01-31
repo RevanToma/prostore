@@ -11,6 +11,7 @@ import { CartItem, PaymentResult } from '@/types';
 import { paypal } from '../paypal';
 import { revalidatePath } from 'next/cache';
 import { PAGE_SIZE } from '../constants';
+import { Prisma } from '@prisma/client';
 
 export const createOrder = async () => {
   try {
@@ -260,4 +261,41 @@ export const getMyOrders = async ({
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
+};
+
+export const getOrderSummary = async () => {
+  const ordersCount = await prisma.order.count(),
+    productsCount = await prisma.product.count(),
+    usersCount = await prisma.user.count(),
+    totalSales = await prisma.order.aggregate({
+      _sum: { totalPrice: true },
+    });
+
+  const salesDataRaw = await prisma.$queryRaw<
+    Array<{ month: string; totalSales: Prisma.Decimal }>
+  >`SELECT to_char("createdAt", 'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" GROUP BY to_char("createdAt", 'MM/YY')`;
+
+  const salesData = salesDataRaw.map((entry) => ({
+    month: entry.month,
+    totalSales: Number(entry.totalSales),
+  }));
+
+  const latestSale = await prisma.order.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      user: {
+        select: { name: true },
+      },
+    },
+    take: 6,
+  });
+
+  return {
+    ordersCount,
+    productsCount,
+    usersCount,
+    totalSales,
+    salesData,
+    latestSale,
+  };
 };
