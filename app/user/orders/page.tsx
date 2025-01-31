@@ -1,17 +1,6 @@
 import OrdersTable from '@/components/shared/orders-table';
-import Pagination from '@/components/shared/pagination';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { getMyOrders } from '@/lib/actions/order.action';
-import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
 import { Metadata } from 'next';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'My Orders',
@@ -29,7 +18,7 @@ const OrdersPage = async (props: {
       <OrdersTable
         orders={orders.data!}
         page={Number(page) || 1}
-        totalPages={orders?.totalPages!}
+        totalPages={orders?.totalPages || 1}
       />
     </div>
   );

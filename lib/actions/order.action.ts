@@ -338,3 +338,46 @@ export const deleteOrder = async (orderId: string) => {
     return { success: false, message: formatError(error) };
   }
 };
+
+// update COD order to paid
+
+export const updateOrderToPaidCOD = async (orderId: string) => {
+  try {
+    await updateOrderToPaid({ orderId });
+    revalidatePath(`/order/${orderId}`);
+
+    return {
+      success: true,
+      message: 'Order marked as Paid',
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+};
+
+export const deliverOrder = async (orderId: string) => {
+  try {
+    const order = await getOrderById(orderId);
+
+    if (!order) throw new Error('Order not found');
+    if (!order.isPaid) throw new Error('Order not paid');
+    if (order.isDelivered) throw new Error('Order already delivered');
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        isDelivered: true,
+        deliveredAt: new Date(),
+      },
+    });
+
+    revalidatePath(`/order/${orderId}`);
+
+    return {
+      success: true,
+      message: 'Order marked as delivered',
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+};
