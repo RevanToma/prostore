@@ -17,9 +17,9 @@ const AdminProductsPage = async (props: {
   searchParams: Promise<{ page: string; query: string; category: string }>;
 }) => {
   const searchParams = await props.searchParams,
-    page = Number(searchParams.page) || 1,
-    searchText = searchParams.query || '',
-    category = searchParams.category || '';
+    page = Number(searchParams.page) || 1;
+  // searchText = searchParams.query || '',
+  // category = searchParams.category || '';
 
   const { data, totalPages } = await getAllProducts({
     // query: searchText,
