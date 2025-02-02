@@ -22,9 +22,9 @@ const AdminProductsPage = async (props: {
     category = searchParams.category || '';
 
   const { data, totalPages } = await getAllProducts({
-    query: searchText,
+    // query: searchText,
     page,
-    category,
+    // category,
   });
 
   return (
