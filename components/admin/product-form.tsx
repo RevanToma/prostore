@@ -21,6 +21,10 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import slugify from 'slugify';
 import { createProduct, updateProduct } from '@/lib/actions/product.actions';
+import { Card, CardContent } from '../ui/card';
+import Image from 'next/image';
+import { UploadButton } from '@/lib/uploadthing';
+import { Checkbox } from '../ui/checkbox';
 
 type ProductFormProps = {
   type: 'Create' | 'Update';
@@ -85,6 +89,11 @@ const ProductForm: FC<ProductFormProps> = ({ type, product, productId }) => {
       }
     }
   };
+
+  const images = form.watch('images'),
+    banner = form.watch('banner'),
+    isFeatured = form.watch('isFeatured');
+
   return (
     <Form {...form}>
       <form
@@ -240,8 +249,95 @@ const ProductForm: FC<ProductFormProps> = ({ type, product, productId }) => {
         </div>
         <div className='upload-field flex flex-col md:flex-row gap-5'>
           {/* IMAGES */}
+          <FormField
+            control={form.control}
+            name='images'
+            render={() => (
+              <FormItem className='w-full'>
+                <FormLabel>Images</FormLabel>
+
+                <Card>
+                  <CardContent className='space-y-2 mt-2 min-h-48'>
+                    <div className='flex-start space-x-2'>
+                      {images.map((img, idx) => (
+                        <Image
+                          key={img}
+                          src={img}
+                          alt='Product image'
+                          className='w-20 h20 object-cover object-center rounded-sm'
+                          width={100}
+                          height={100}
+                        />
+                      ))}
+                      <FormControl>
+                        <UploadButton
+                          endpoint='imageUploader'
+                          onClientUploadComplete={(res: { url: string }[]) => {
+                            form.setValue('images', [...images, res[0].url]);
+                          }}
+                          onUploadError={(error: Error) => {
+                            toast({
+                              variant: 'destructive',
+                              description: `ERROR! ${error.message}`,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
-        <div className='upload-field'>{/* ISFEATIRED */}</div>
+        <div className='upload-field'>
+          Featured Product
+          <Card>
+            <CardContent className='psace-y-2 mt-2'>
+              <FormField
+                control={form.control}
+                name='isFeatured'
+                render={({ field }) => (
+                  <FormItem className='space-x-2 items-center'>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Is featured</FormLabel>
+                  </FormItem>
+                )}
+              />
+              {isFeatured && banner && (
+                <Image
+                  src={banner}
+                  alt='Banner image'
+                  className='w-full object-cover object-center rounded-sm'
+                  width={1920}
+                  height={680}
+                />
+              )}
+
+              {isFeatured && !banner && (
+                <UploadButton
+                  endpoint='imageUploader'
+                  onClientUploadComplete={(res: { url: string }[]) => {
+                    form.setValue('banner', res[0].url);
+                  }}
+                  onUploadError={(error: Error) => {
+                    toast({
+                      variant: 'destructive',
+                      description: `ERROR! ${error.message}`,
+                    });
+                  }}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
         <div>
           {/* DESCRIPTION */}
           <FormField

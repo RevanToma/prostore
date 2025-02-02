@@ -30,7 +30,7 @@ const ShippingAddressPage = async () => {
   return (
     <>
       <CheckoutSteps current={1} />
-      <ShippingAddressForm address={user.address as ShippingAddress} />;
+      <ShippingAddressForm address={user.address as ShippingAddress} />
     </>
   );
 };

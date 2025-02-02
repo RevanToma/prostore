@@ -69,9 +69,7 @@ const AdminProductsPage = async (props: {
           ))}
         </TableBody>
       </Table>
-      {totalPages && totalPages > 1 && (
-        <Pagination page={page} totalPages={totalPages} />
-      )}
+      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} />}
     </div>
   );
 };

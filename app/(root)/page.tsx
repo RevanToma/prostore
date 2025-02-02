@@ -3,9 +3,10 @@ import { getLatestProducts } from '@/lib/actions/product.actions';
 
 async function HomePage() {
   const latestProducts = await getLatestProducts();
+
   return (
     <>
-      <ProductList data={latestProducts} title='Newest arrivel' limit={4} />
+      <ProductList data={latestProducts} title='Newest arrivel' limit={10} />
     </>
   );
 }

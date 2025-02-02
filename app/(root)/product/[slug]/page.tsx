@@ -24,10 +24,6 @@ const ProductDetailsPage = async (props: {
           <div className='col-span-2'>
             <ProductImages images={product.images} />
           </div>
-
-          {/* Right Column: Product Details + Add to Cart */}
-
-          {/* Product Details */}
           <div className='col-span-2 p-5'>
             <div className='flex flex-col gap-6'>
               <p>
