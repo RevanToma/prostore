@@ -259,7 +259,7 @@ const ProductForm: FC<ProductFormProps> = ({ type, product, productId }) => {
                 <Card>
                   <CardContent className='space-y-2 mt-2 min-h-48'>
                     <div className='flex-start space-x-2'>
-                      {images.map((img, idx) => (
+                      {images.map((img) => (
                         <Image
                           key={img}
                           src={img}
