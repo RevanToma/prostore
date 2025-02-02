@@ -27,10 +27,10 @@ export const getProductBySlug = async (slug: string) => {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getAllProducts = async ({
-  query,
+  query: _query,
   limit = PAGE_SIZE,
   page,
-  category,
+  category: _category,
 }: {
   query: string;
   limit?: number;
