@@ -5,6 +5,7 @@ import { prisma } from '@/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { insertProductSchema, updateProductSchema } from '../validators';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 
 export const getLatestProducts = async () => {
   const products = await prisma.product.findMany({
@@ -33,25 +34,40 @@ export const getProductById = async (productId: string) => {
   return convertToPlainObj(data);
 };
 
-// USE THIS LATER?
 export const getAllProducts = async ({
-  // query,
+  query,
   limit = PAGE_SIZE,
   page,
-}: // category,
-{
-  // query: string;
+  category,
+}: {
+  query: string;
   limit?: number;
   page: number;
-  // category?: string;
+  category?: string;
 }) => {
+  const whereClause: Prisma.ProductWhereInput = {};
+
+  if (query) {
+    whereClause.OR = [
+      { name: { contains: query, mode: 'insensitive' } }, // Case-insensitive name search
+      { category: { contains: query, mode: 'insensitive' } }, // Case-insensitive category search
+    ];
+  }
+
+  if (category) {
+    whereClause.category = category;
+  }
+
   const data = await prisma.product.findMany({
+    where: whereClause,
     orderBy: { createdAt: 'desc' },
     skip: (page - 1) * limit,
     take: limit,
   });
 
-  const dataCount = await prisma.product.count();
+  const dataCount = await prisma.product.count({
+    where: whereClause,
+  });
 
   return {
     data,

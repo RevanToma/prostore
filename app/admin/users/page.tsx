@@ -1,5 +1,4 @@
 import DeleteDialog from '@/components/shared/delete-dialog';
-import OrdersTable from '@/components/shared/orders-table';
 import Pagination from '@/components/shared/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,14 +20,29 @@ export const metadata: Metadata = { title: 'Admin User Page' };
 const AdminUserPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{ page: string; query: string }>;
 }) => {
-  const { page = '1' } = await searchParams,
-    { totalPages, data } = await getAllUsers({ page: Number(page) });
+  const { page = '1', query: searchText } = await searchParams,
+    { totalPages, data } = await getAllUsers({
+      page: Number(page),
+      query: searchText,
+    });
 
   return (
     <div className='space-y-2'>
-      <h2 className='h2-bold'>Users</h2>
+      <div className='flex-items-center gap-3'>
+        <h1 className='h2-bold'>Users</h1>
+        {searchText && (
+          <div>
+            Filtered by <i>&quot;{searchText}&quot;</i>{' '}
+            <Link href={'/admin/users'}>
+              <Button variant={'outline'} size={'sm'}>
+                Remove Filter
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
       <div className='overflow-x-auto'>
         <Table>
           <TableHeader>
