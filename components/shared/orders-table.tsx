@@ -22,12 +22,11 @@ type OrdersTableProps = {
     paidAt?: Date | null;
     isDelivered: boolean;
     deliveredAt?: Date | null;
-    user: { name: string };
+    user?: { name: string };
   }[];
   page: number;
   totalPages: number;
   renderActions?: boolean;
-  name?: string;
 };
 
 const OrdersTable: React.FC<OrdersTableProps> = ({
@@ -54,7 +53,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
             <TableRow key={order.id}>
               <TableCell>{formatId(order.id)}</TableCell>
               <TableCell>{formatDateTime(order.createdAt).dateTime}</TableCell>
-              <TableCell>{order.user.name}</TableCell>
+              <TableCell>{order.user?.name}</TableCell>
               <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
               <TableCell>
                 {order.isPaid && order.paidAt

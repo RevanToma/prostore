@@ -16,7 +16,7 @@ const OrdersPage = async (props: {
     <div className='space-y-2'>
       <h2 className='h2-bold'>Orders</h2>
       <OrdersTable
-        orders={orders.data!}
+        orders={orders.data || []}
         page={Number(page) || 1}
         totalPages={orders?.totalPages || 1}
       />
