@@ -133,3 +133,34 @@ export const formUrlQuery = ({
     query,
   });
 };
+
+// export async function generateMetaData(props: {
+//   searchParams: Promise<{
+//     q: string;
+//     c: string;
+//     p: string;
+//     r: string;
+//   }>;
+// }) {
+//   const { q = 'all', c = 'all', p = '1', r = 'all' } = await props.searchParams;
+
+//   const isQuerySet = q && q !== 'all' && q.trim() !== '',
+//     isCategorySet = c && c !== 'all' && c.trim() !== '',
+//     isPriceSet = p && p !== 'all' && p.trim() !== '',
+//     isRatingSet = r && r !== 'all' && r.trim() !== '';
+
+//   if (isQuerySet || isCategorySet || isPriceSet || isRatingSet) {
+//     return {
+//       title: `Search ${isQuerySet ? q : ''}
+//       ${isCategorySet ? `: Category ${c}` : ''}
+//       ${isPriceSet ? `: Price ${p}` : ''}
+//       ${isRatingSet ? `: Price ${r}` : ''}
+
+//       `,
+//     };
+//   } else {
+//     return {
+//       title: 'Search Products',
+//     };
+//   }
+// }
