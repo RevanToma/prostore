@@ -1,3 +1,4 @@
+import { auth } from '@/auth';
 import AddToCart from '@/components/shared/prodoct/add-to-cart';
 import ProductImages from '@/components/shared/prodoct/product-images';
 import ProductPrice from '@/components/shared/prodoct/product-price';
@@ -6,12 +7,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getMyCart } from '@/lib/actions/cart.action';
 import { getProductBySlug } from '@/lib/actions/product.actions';
 import { notFound } from 'next/navigation';
+import ReviewList from './review-list';
+import Rating from '@/components/rating';
 
 const ProductDetailsPage = async (props: {
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await props.params,
-    product = await getProductBySlug(slug);
+    product = await getProductBySlug(slug),
+    session = await auth(),
+    userId = session?.user.id;
 
   if (!product) notFound();
 
@@ -30,9 +35,8 @@ const ProductDetailsPage = async (props: {
                 {product.brand} {product.category}
               </p>
               <h1 className='h3-bold'>{product.name}</h1>
-              <p>
-                {product.rating} of {product.numReviews} Reviews
-              </p>
+              <Rating value={Number(product.rating)} />
+              <p>{product.numReviews} reviews</p>
               <div className='flex flex-col sm:flex-row sm:items-center gap-3'>
                 <ProductPrice
                   value={Number(product.price)}
@@ -46,7 +50,6 @@ const ProductDetailsPage = async (props: {
             </div>
           </div>
 
-          {/* Add to Cart Section (Now Properly Aligned) */}
           <div className='col-span-1 flex items-start'>
             <Card className='w-full'>
               <CardContent className='p-4'>
@@ -83,6 +86,14 @@ const ProductDetailsPage = async (props: {
             </Card>
           </div>
         </div>
+      </section>
+      <section className='mt-10'>
+        <h2 className='h2-bold mb-3'>Customer Reviews</h2>
+        <ReviewList
+          userId={userId || ''}
+          productId={product.id}
+          productSlug={product.slug}
+        />
       </section>
     </>
   );
