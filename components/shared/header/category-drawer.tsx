@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { DialogTitle } from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -24,7 +23,7 @@ const CategoryDrawer = async () => {
         </Button>
       </DrawerTrigger>
       <DrawerContent className='h-full max-w-sm'>
-        <DialogTitle>Categories</DialogTitle>
+        <DrawerTitle>Categories</DrawerTitle>
         <DrawerHeader>Select a category</DrawerHeader>
         <div className='space-y-1 mt-4'>
           {categories.map((x) => (

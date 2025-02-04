@@ -39,28 +39,55 @@ export const getAllProducts = async ({
   limit = PAGE_SIZE,
   page,
   category,
+  price,
+  rating,
+  sort,
 }: {
   query: string;
   limit?: number;
   page: number;
   category?: string;
+  price?: string;
+  rating?: string;
+  sort?: string;
 }) => {
   const whereClause: Prisma.ProductWhereInput = {};
 
-  if (query) {
+  if (query && query !== 'all') {
     whereClause.OR = [
-      { name: { contains: query, mode: 'insensitive' } }, // Case-insensitive name search
-      { category: { contains: query, mode: 'insensitive' } }, // Case-insensitive category search
+      { name: { contains: query, mode: 'insensitive' } as Prisma.StringFilter },
+      { category: { contains: query, mode: 'insensitive' } },
     ];
   }
 
-  if (category) {
+  if (category && category !== 'all') {
     whereClause.category = category;
+  }
+
+  if (price && price !== 'all') {
+    const [min, max] = price.split('-');
+    whereClause.price = {
+      gte: Number(min),
+      lte: Number(max),
+    };
+  }
+
+  if (rating && rating !== 'all') {
+    whereClause.rating = {
+      gte: Number(rating),
+    };
   }
 
   const data = await prisma.product.findMany({
     where: whereClause,
-    orderBy: { createdAt: 'desc' },
+    orderBy:
+      sort === 'lowest'
+        ? { price: 'asc' }
+        : sort === 'highest'
+        ? { price: 'desc' }
+        : sort === 'rating'
+        ? { rating: 'desc' }
+        : { createdAt: 'desc' },
     skip: (page - 1) * limit,
     take: limit,
   });
