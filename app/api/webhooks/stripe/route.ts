@@ -3,8 +3,10 @@ import { updateOrderToPaid } from '@/lib/actions/order.action';
 import Stripe from 'stripe';
 
 export async function POST(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
   // build the webook event
-  const event = await Stripe.webhooks.constructEvent(
+  const event = stripe.webhooks.constructEvent(
     await req.text(),
     req.headers.get('stripe-signature') as string,
     process.env.STRIPE_WEBHOOK_SECRET as string

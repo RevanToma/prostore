@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 
 const ProfilePage = async () => {
   const session = await auth();
+
   return (
     <SessionProvider session={session}>
       <div className='max-w-md mx-auto space-y-4'>
