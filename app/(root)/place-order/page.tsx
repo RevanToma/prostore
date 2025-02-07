@@ -30,7 +30,9 @@ const PlaceOrderPage = async () => {
     userId = session?.user?.id,
     cart = await getMyCart();
 
-  if (!userId) throw new Error('User not found');
+  if (!userId) {
+    redirect('/');
+  }
 
   const user = await getUserById(userId);
 

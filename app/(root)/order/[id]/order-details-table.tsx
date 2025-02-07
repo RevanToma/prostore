@@ -27,15 +27,18 @@ import {
 } from '@/lib/actions/order.action';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import StripePayment from './stripe-payment';
 
 const OrderDetailsTable = ({
   order,
   paypalClientId,
   isAdmin,
+  stripeClientSecret,
 }: {
   order: Order;
   paypalClientId: string;
   isAdmin: boolean;
+  stripeClientSecret: string | null;
 }) => {
   const {
       shippingAddress,
@@ -247,6 +250,15 @@ const OrderDetailsTable = ({
                 <MarkAsPaidButton />
               )}
               {isAdmin && isPaid && !isDelivered && <MarkAsDeliveredButton />}
+
+              {/* STRIPE PAYMENT */}
+              {!isPaid && paymentMethod === 'Stripe' && stripeClientSecret && (
+                <StripePayment
+                  clientSecret={stripeClientSecret}
+                  priceInCents={Number(order.totalPrice) * 100}
+                  orderId={order.id}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
