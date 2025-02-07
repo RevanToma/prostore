@@ -190,7 +190,6 @@ export const approvePayPalOrder = async (
     return { success: false, message: formatError(error) };
   }
 };
-
 export const updateOrderToPaid = async ({
   orderId,
   paymentResult,
@@ -198,36 +197,35 @@ export const updateOrderToPaid = async ({
   orderId: string;
   paymentResult?: PaymentResult;
 }) => {
+  console.log('🛠 Updating order:', { orderId, paymentResult });
+
   const order = await getOrderById(orderId);
 
-  if (!order) throw new Error('Order not found');
-  if (order.isPaid) throw new Error('Order already paid');
+  if (!order) throw new Error(`Order with ID ${orderId} not found`);
 
-  await prisma.$transaction(async (tx) => {
-    for (const item of order.orderitems) {
-      await tx.product.update({
-        where: { id: item.productId },
+  if (order.isPaid) return order;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: { id: orderId },
         data: {
-          stock: {
-            increment: -item.qty,
-          },
+          isPaid: true,
+          paidAt: new Date(),
+          paymentResult,
         },
       });
-    }
-
-    await tx.order.update({
-      where: { id: orderId },
-      data: {
-        isPaid: true,
-        paidAt: new Date(),
-        paymentResult,
-      },
     });
-  });
 
-  const updatedOrder = await getOrderById(orderId);
+    const updatedOrder = await getOrderById(orderId);
+    if (!updatedOrder) throw new Error(`Failed to update order ${orderId}`);
 
-  if (!updatedOrder) throw new Error('Failed to update order');
+    console.log('✅ Order successfully updated:', updatedOrder.id);
+    return updatedOrder;
+  } catch (error) {
+    console.error('❌ Order update failed:', error);
+    throw error;
+  }
 };
 
 export const getMyOrders = async ({
