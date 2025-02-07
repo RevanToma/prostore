@@ -191,7 +191,7 @@ export const approvePayPalOrder = async (
   }
 };
 
-const updateOrderToPaid = async ({
+export const updateOrderToPaid = async ({
   orderId,
   paymentResult,
 }: {
