@@ -2,7 +2,7 @@ import { getOrderById } from '@/lib/actions/order.action';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import OrderDetailsTable from './order-details-table';
-import { ShippingAddress } from '@/types';
+import { ShippingAddress, isApiError } from '@/types';
 import { auth } from '@/auth';
 import Stripe from 'stripe';
 
@@ -20,6 +20,9 @@ const OrderDetailsPage = async ({
 
   if (!order) notFound();
 
+  if (isApiError(order)) {
+    throw new Error(order.message);
+  }
   const session = await auth();
 
   let client_secret = null;
