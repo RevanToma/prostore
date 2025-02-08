@@ -108,3 +108,44 @@ const sampleData = {
 };
 
 export default sampleData;
+
+export const order = {
+  id: '123',
+  userId: '123',
+  user: {
+    name: 'John Doe',
+    email: 'tamrevan@gmail.com',
+  },
+  paymentMethod: 'Stripe',
+  shippingAddress: {
+    fullName: 'John Doe',
+    streetAddress: '123 Main St',
+    city: 'San Francisco',
+    postalCode: '94111',
+    country: 'USA',
+  },
+  createdAt: new Date(),
+  totalPrice: '100',
+  taxPrice: '10',
+  shippingPrice: '10',
+  itemsPrice: '80',
+  orderitems: sampleData.products.map((product) => ({
+    name: product.name,
+    orderId: '123',
+    productId: '123',
+    slug: product.slug,
+    qty: product.stock,
+    image: product.images[0],
+    price: product.price.toString(),
+  })),
+  isDelivered: true,
+  deliveredAt: new Date(),
+  isPaid: true,
+  paidAt: new Date(),
+  paymentResult: {
+    id: '123',
+    status: 'succeeded',
+    pricePaid: '100',
+    email_address: 'tamrevan@gmail.com',
+  },
+};

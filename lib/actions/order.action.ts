@@ -7,11 +7,18 @@ import { getMyCart } from './cart.action';
 import { getUserById } from './user.actions';
 import { insertOrderSchema } from '../validators';
 import { prisma } from '@/db/prisma';
-import { CartItem, PaymentResult } from '@/types';
+import {
+  ApiResponse,
+  CartItem,
+  Order,
+  PaymentResult,
+  isApiError,
+} from '@/types';
 import { paypal } from '../paypal';
 import { revalidatePath } from 'next/cache';
 import { PAGE_SIZE } from '../constants';
 import { Prisma } from '@prisma/client';
+import { sendPurchaseReceipt } from '../email';
 
 export const createOrder = async () => {
   try {
@@ -96,7 +103,9 @@ export const createOrder = async () => {
   }
 };
 
-export const getOrderById = async (orderId: string) => {
+export const getOrderById = async (
+  orderId: string
+): Promise<ApiResponse<Order>> => {
   const session = await auth();
 
   try {
@@ -122,10 +131,12 @@ export const createPayPalOrder = async (orderId: string) => {
   try {
     const order = await getOrderById(orderId);
 
-    if (!order) throw new Error('Order not found');
+    if (isApiError(order)) {
+      throw new Error(order.message);
+    }
 
+    // ✅ Now TypeScript knows `order` is an `Order`
     const payPalOrder = await paypal.createOrder(Number(order.totalPrice));
-
     if (!payPalOrder) throw new Error('Failed to create payment');
 
     await prisma.order.update({
@@ -157,7 +168,9 @@ export const approvePayPalOrder = async (
   try {
     const order = await getOrderById(orderId);
 
-    if (!order) throw new Error('Order not found');
+    if (isApiError(order)) {
+      throw new Error(order.message);
+    }
 
     const captureData = await paypal.capturePayment(data.orderID);
 
@@ -203,6 +216,10 @@ export const updateOrderToPaid = async ({
 
   if (!order) throw new Error(`Order with ID ${orderId} not found`);
 
+  if (isApiError(order)) {
+    throw new Error(order.message);
+  }
+
   if (order.isPaid) return order;
 
   try {
@@ -218,9 +235,18 @@ export const updateOrderToPaid = async ({
     });
 
     const updatedOrder = await getOrderById(orderId);
+
+    if (isApiError(updatedOrder)) {
+      throw new Error(updatedOrder.message);
+    }
     if (!updatedOrder) throw new Error(`Failed to update order ${orderId}`);
 
-    console.log('✅ Order successfully updated:', updatedOrder.id);
+    await sendPurchaseReceipt({
+      ...updatedOrder,
+      shippingAddress: updatedOrder.shippingAddress,
+      paymentResult: updatedOrder.paymentResult,
+    });
+
     return updatedOrder;
   } catch (error) {
     console.error('❌ Order update failed:', error);
@@ -371,6 +397,10 @@ export const updateOrderToPaidCOD = async (orderId: string) => {
 export const deliverOrder = async (orderId: string) => {
   try {
     const order = await getOrderById(orderId);
+
+    if (isApiError(order)) {
+      throw new Error(order.message);
+    }
 
     if (!order) throw new Error('Order not found');
     if (!order.isPaid) throw new Error('Order not paid');
