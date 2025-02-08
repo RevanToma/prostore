@@ -57,6 +57,7 @@ const AdminProductsPage = async (props: {
             <TableHead>CATEGORY</TableHead>
             <TableHead>STOCK</TableHead>
             <TableHead>RATING</TableHead>
+            <TableHead>isFeatured</TableHead>
             <TableHead className='w-[100px]'>ACTIONS</TableHead>
           </TableRow>
         </TableHeader>
@@ -71,6 +72,8 @@ const AdminProductsPage = async (props: {
               <TableCell>{product.category}</TableCell>
               <TableCell>{product.stock}</TableCell>
               <TableCell>{product.rating}</TableCell>
+              {product.isFeatured && <TableCell>Yes</TableCell>}
+              {!product.isFeatured && <TableCell>No</TableCell>}
               <TableCell className='flex gap-1'>
                 <Button asChild variant={'outline'} size={'sm'}>
                   <Link href={`/admin/products/${product.id}`}>Edit</Link>
