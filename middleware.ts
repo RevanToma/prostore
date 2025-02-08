@@ -1,25 +1,30 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// import { NextResponse } from 'next/server';
+// import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  let sessionCartId = request.cookies.get('sessionCartId')?.value;
+import NextAuth from 'next-auth';
+import { authConfig } from './auth.config';
 
-  if (!sessionCartId) {
-    sessionCartId = crypto.randomUUID();
+// export async function middleware(request: NextRequest) {
+//   let sessionCartId = request.cookies.get('sessionCartId')?.value;
 
-    const response = NextResponse.next();
-    response.cookies.set('sessionCartId', sessionCartId, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      path: '/',
-    });
-    return response;
-  }
+//   if (!sessionCartId) {
+//     sessionCartId = crypto.randomUUID();
 
-  return NextResponse.next();
-}
+//     const response = NextResponse.next();
+//     response.cookies.set('sessionCartId', sessionCartId, {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: 'lax',
+//       path: '/',
+//     });
+//     return response;
+//   }
 
-export const config = {
-  matcher: ['/:path*'],
-};
+//   return NextResponse.next();
+// }
+
+// export const config = {
+//   matcher: ['/:path*'],
+// };
+
+export const { auth: middleware } = NextAuth(authConfig);

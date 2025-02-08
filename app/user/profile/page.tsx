@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import ProfileForm from './profile-form';
+import { notFound } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Customer Profile',
@@ -9,6 +10,8 @@ export const metadata: Metadata = {
 
 const ProfilePage = async () => {
   const session = await auth();
+
+  if (!session) notFound();
 
   return (
     <SessionProvider session={session}>
