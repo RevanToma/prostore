@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { getOrderById } from '@/lib/actions/order.action';
+import { isApiError } from '@/types';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import Stripe from 'stripe';
@@ -17,6 +18,10 @@ const SucessPage = async (props: {
   const order = await getOrderById(id);
 
   if (!order) notFound();
+
+  if (isApiError(order)) {
+    throw new Error(order.message);
+  }
 
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
