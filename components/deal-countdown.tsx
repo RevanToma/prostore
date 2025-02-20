@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 //utc time
-const TARGET_DATE = new Date('2025-02-20T00:00:00Z'); // 'Z' enforces UTC
+const TARGET_DATE = new Date('2025-03-20T00:00:00Z'); // 'Z' enforces UTC
 
 const calculateTimeRemaining = (targetDate: Date) => {
   const currentTime = new Date();
