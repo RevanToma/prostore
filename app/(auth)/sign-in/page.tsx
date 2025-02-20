@@ -22,12 +22,13 @@ const SignInPage = async (props: {
     callbackUrl: string;
   }>;
 }) => {
-  const { callbackUrl } = await props.searchParams,
-    session = await auth();
+  const session = await auth(),
+    { callbackUrl } = await props.searchParams;
 
   if (session) {
     return redirect(callbackUrl || '/');
   }
+
   return (
     <div className='w-full max-w-md mx-auto'>
       <Card>

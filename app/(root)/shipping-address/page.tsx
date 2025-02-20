@@ -20,7 +20,11 @@ const ShippingAddressPage = async () => {
   const session = await auth(),
     userId = session?.user?.id;
 
-  if (!userId) notFound();
+  if (!userId) {
+    const currentPath = encodeURIComponent('/shipping-address');
+
+    redirect(`/sign-in?callbackUrl=${currentPath}`);
+  }
 
   const user = await getUserById(userId);
 

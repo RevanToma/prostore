@@ -57,6 +57,7 @@ export const config = {
       session.user.id = token.sub;
       session.user.role = token.role;
       session.user.email = token.email;
+      session.user.sessionCartId = token.sessionCartId;
 
       if (trigger === 'update') {
         session.user.name = user.name;
@@ -79,25 +80,25 @@ export const config = {
         }
 
         if (trigger === 'signIn' || trigger === 'signUp') {
-          const cookiesObject = await cookies(),
-            sessionCartId = cookiesObject.get('sessionCartId')?.value;
+          const cookiesObject = await cookies();
+          let sessionCartId = cookiesObject.get('sessionCartId')?.value;
 
-          if (sessionCartId) {
-            const sessionCart = await prisma.cart.findFirst({
-              where: { sessionCartId },
-            });
-
-            if (sessionCart) {
-              await prisma.cart.deleteMany({
-                where: { userId: user.id },
-              });
-
-              await prisma.cart.update({
-                where: { id: sessionCart.id },
-                data: { userId: user.id },
-              });
-            }
+          if (!sessionCartId) {
+            sessionCartId = crypto.randomUUID();
+            cookiesObject.set('sessionCartId', sessionCartId);
           }
+
+          const sessionCart = await prisma.cart.findFirst({
+            where: { sessionCartId },
+          });
+
+          if (sessionCart) {
+            await prisma.cart.update({
+              where: { id: sessionCart.id },
+              data: { userId: user.id },
+            });
+          }
+          token.sessionCartId = sessionCartId;
         }
       }
 

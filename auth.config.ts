@@ -6,7 +6,6 @@ export const authConfig = {
   callbacks: {
     authorized({ request, auth }: any) {
       if (!request.cookies.get('sessionCartId')) {
-        // array of regex patterns of paths we want to protect
         const protectedPaths = [
           /\/shipping-address/,
           /\/payment-method/,

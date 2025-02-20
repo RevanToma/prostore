@@ -31,7 +31,6 @@ export const signInWithCredentials = async (
     await signIn('credentials', {
       email: user.email,
       password: user.password,
-      redirect: false,
     });
 
     return { success: true, message: 'Signed in successfully' };
