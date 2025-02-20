@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { Metadata } from 'next';
 import { ShippingAddress } from '@/types';
 import { getMyCart } from '@/lib/actions/cart.action';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { getUserById } from '@/lib/actions/user.actions';
 import ShippingAddressForm from './shipping-address-form';
 import CheckoutSteps from '@/components/shared/checkout-steps';
